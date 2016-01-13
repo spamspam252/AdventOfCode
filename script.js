@@ -176,7 +176,7 @@ function day3b(text) {
 }
 
 function day4a(text) {
-    var i = 100000;
+    var i = 0;
     var temp = "";
     while (true) {
         temp = text.concat(i);
@@ -187,7 +187,7 @@ function day4a(text) {
     return i;
 }
 function day4b(text) {
-    var i = 100000;
+    var i = 0;
     var temp = "";
     while (true) {
         temp = text.concat(i);
@@ -198,13 +198,68 @@ function day4b(text) {
     return i;
 }
 
+function day5a(text) {
+    // var temp = "ugknbfddgicrmopn";
+    // console.log(temp.match(/(a|e|i|o|u)/g).length);
+    var result = 0;
+    // console.log(text);
+    function aeiou(text) {
+        // console.log("1 check");
+        if (text.match(/(a|e|i|o|u)/g) != null)
+            return text.match(/(a|e|i|o|u)/g).length >= 3;
+        else return false;
+    }
+    function duplicate(text) {
+        // console.log("2 check");
+        return Boolean(text.match(/([a-z])\1+/g));
+    }
+    function naulty(text) {
+        // console.log("3 check");
+        return Boolean(text.match(/ab|cd|pq|xy/g));
+    }
+    var lines = text.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+        if (aeiou(lines[i])
+            && !naulty(lines[i])
+            && duplicate(lines[i])
+            )
+            result++;
+        // console.log(lines[i]);
+        // console.log("aeiou:" + aeiou(lines[i]));
+        // console.log("dup: " + duplicate(lines[i]));
+        // console.log("!naulty: " + naulty(lines[i]));
+    }
+    return result;
+}
+
+function day5b(text) {
+    var result = 0;
+    function pair(text) {
+        return Boolean(text.match(/([a-z]{2}).*\1+/));
+    }
+    function repeat(text) {
+        return Boolean(text.match(/([a-z]).\1+/));
+    }
+    var lines = text.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+        if (
+            pair(lines[i])
+            && repeat(lines[i])
+            )
+            result++;
+        // console.log(lines[i]);
+        // console.log("pair: " + pair(lines[i]));
+        // console.log("repeat: " + repeat(lines[i]));
+    }
+    return result;
+}
 
 window.onload = function () {
 
     var fileUrl = "input.txt";
     var text = "";
     text = readTextFile(fileUrl);
-    // document.getElementById("output").innerHTML = day4b(text).toString();
+    document.getElementById("output").innerHTML = day5b(text).toString();
     // alert(CryptoJS.MD5("pqrstuv1048970"));
 
 };
