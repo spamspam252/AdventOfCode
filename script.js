@@ -31,9 +31,11 @@ function createArray(length) {
 function day1a(text) {
     var result = 0;
     for (var i = 0; i < text.length; i++) {
-        if (text[i] === "(") result++;
+        if (text[i] === '(') result++;
         else result--;
     }
+    
+    
     return result;
 }
 
@@ -41,7 +43,7 @@ function day1a(text) {
 function day1b(text) {
     var result = 0;
     for (var i = 0; i < text.length; i++) {
-        if (text[i] === "(") result++;
+        if (text[i] === '(') result++;
         else result--;
         if (result === -1) break;
     }
@@ -49,43 +51,71 @@ function day1b(text) {
 }
 
 function day2a(text) {
-    var result = 0;
-    var lines = text.split('\n');
-    var arr = new Array(3);
-    var line;
-
-    for (var i = 0; i < lines.length; i++) {
-        line = lines[i];
-        // console.log(line);
-        arr = line.split('x');
-
-        result += 2 * (arr[0] * arr[1] + arr[1] * arr[2] + arr[0] * arr[2]);
-        result += Math.min(arr[0] * arr[1], arr[1] * arr[2], arr[0] * arr[2]);
+    function parseSize(line){
+        var size = line.split('x');
+        return {
+            l: size[0],
+            w: size[1],
+            h: size[2],
+        };
     }
+    
+    function cal(size){
+        return{
+            paper: 2 * (size.l * size.w + size.w * size.h + size.h * size.l),
+            slack: Math.min(size.l*size.w, size.w*size.h, size.h*size.l),
+            f : function(){
+                return this.paper + this.slack;
+            }
+        }
+    }
+    
+    var result = text.split('\n')
+    .map(parseSize)
+    .map(cal) 
+    .reduce(function(inital,current){
+        return inital + current.f();
+        } 
+    ,0);
+
     return result;
 }
 
 
 function day2b(text) {
-    var result = 0;
-    var lines = text.split('\n');
-    var arr = new Array(3);
-    var ribbon, bow;
-    for (var i = 0; i < lines.length; i++) {
-        arr = lines[i].split('x').sort(function (a, b) { return a - b; });
-        // console.log(arr[0] + "," + arr[1] + "," + arr[2]);
-        ribbon = 2 * arr[0] + 2 * arr[1];
-        // console.log(ribbon);
-        bow = arr[0] * arr[1] * arr[2];
-        // console.log(bow);
-        result += (ribbon + bow);
+
+    function parseSize(line){
+        var size = line.split('x').sort(function(a,b){return a-b;});
+        return {
+            l: size[0],
+            w: size[1],
+            h: size[2],
+        };
     }
+    
+    function cal(size){
+        return{
+            ribbon : 2 * size.l + 2 * size.w,
+            bow : size.l * size.w * size.h,
+            f : function(){
+                return this.ribbon + this.bow;
+            }
+        }
+    }
+    
+    var result = text.split('\n')
+    .map(parseSize)
+    .map(cal) 
+    .reduce(function(inital,current){
+        return inital + current.f(); // inital la tong
+        } 
+    ,0); // tong bat dau tu 0
     return result;
 }
 
 function day3a(text) {
     var result = 0;
-    // var lines = text.split('\n');
+    var lines = text.split('\n');
     
     var map = createArray(999, 999);
 
@@ -115,7 +145,6 @@ function day3a(text) {
     for (temp = 0; temp < 999; temp++)
         for (temp2 = 0; temp2 < 999; temp2++)
             if (map[temp][temp2] > 0) result++;
-
     return result;
 }
 
@@ -281,19 +310,19 @@ function applyCommand(grid, command) {
           grid[x][y] = !grid[x][y];
           break;
       }
+      
     }
   }
-
   return grid;
 }
     var input= text.split('\n').filter(function(l){return l.length>0});
     
     var count = input
     .map(parseCommand)
-    .reduce(applyCommand, [])
+    .reduce(applyCommand, []) // them array rong la argument dau tien cua applyCommand
     .reduce(function(count,row){
-        return count + row.filter(function(l){return l}).length
-    },0);
+        return count + row.filter(function(l){return l}).length}
+        ,0); // gan 0 la gia tri ban dau cua count
     
     return count;
 
@@ -305,9 +334,10 @@ function day6b(text){
 function parseCommand(text) {
   var parsed = text.match(/(.*) (\d+),(\d+) through (\d+),(\d+)/);
   return { 
-    action : parsed[1], 
-    start : {x:Math.min(parsed[2],parsed[4]), y:Math.min(parsed[3],parsed[5])}, 
-    end : {x:Math.max(parsed[2],parsed[4]), y:Math.max(parsed[3],parsed[5])} }
+        action : parsed[1], 
+        start : { x: Math.min(parsed[2],parsed[4]), y:Math.min(parsed[3],parsed[5])}, 
+        end : { x: Math.max(parsed[2],parsed[4]), y:Math.max(parsed[3],parsed[5])} 
+    }
 }
 function applyCommand2(grid, command) {
   for( var x=command.start.x; x<=command.end.x; x++ ) {
@@ -334,7 +364,7 @@ function applyCommand2(grid, command) {
     
     var count = input
     .map(parseCommand)
-    .reduce(applyCommand2, [])
+    .reduce(applyCommand2, []) 
     .reduce(function(intensity,row){
         return intensity + row.reduce(function(intensity,col){
             return intensity + col
@@ -350,5 +380,11 @@ window.onload = function () {
     var fileUrl = "input.txt";
     var text = "";
     text = readTextFile(fileUrl);
-    document.getElementById("output").innerHTML = day6b(text).toString();
+    document.getElementById("output").innerHTML = day2b(text).toString();
+    
+    // var temp = [1,4,2,3].map(function(x){
+    //     return x +10;
+    // });
+    // console.log(temp);
 };
+    
