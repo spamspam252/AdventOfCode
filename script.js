@@ -114,51 +114,58 @@ function day2b(text) {
 }
 
 function day3a(text) {
-    var result = 0;
-    var lines = text.split('\n');
-    
-    var map = createArray(999, 999);
-
-    for (var temp = 0; temp < 999; temp++)
-        for (var temp2 = 0; temp2 < 999; temp2++)
-            map[temp][temp2] = 0;
-
-    var i = 499, j = 499;
-    map[i][j]++;
-    for (var h = 0; h < text.length; h++) {
-        switch (text[h]) {
-            case '>':
-                map[i][++j]++;
-                break;
-            case '<':
-                map[i][--j]++;
-                break;
-            case 'v':
-                map[++i][j]++;
-                break;
-            case '^':
-                map[--i][j]++;
-                break;
+function calc(supplierCnt) {
+    var supplier = {},
+        turnOrder = 0,
+        houses = {
+            '0:0': 0
         }
+
+    // Prepare X suppliers
+    for (var idx=0; idx < supplierCnt; idx++) {
+        supplier[idx] = {
+            x: 0,
+            y: 0
+        }
+        // Every Supplier drops 1 gift at 0,0
+        houses['0:0']++;
     }
 
-    for (temp = 0; temp < 999; temp++)
-        for (temp2 = 0; temp2 < 999; temp2++)
-            if (map[temp][temp2] > 0) result++;
-    return result;
+    // Iterate over moveset and change x/y-coordinates of supplier X 
+    for (var i=0; i<text.length; i++) {
+        switch (text[i]) {
+            case '^':
+                supplier[turnOrder].y++;
+            break;
+            case '>':
+                supplier[turnOrder].x++;
+            break;
+            case 'v':
+                supplier[turnOrder].y--;
+            break;
+            case '<':
+                supplier[turnOrder].x--;
+            break;
+        }
+
+        // Unique index identifier
+        var index = supplier[turnOrder].x+':'+supplier[turnOrder].y;
+        houses[index] ? houses[index]++ : houses[index] = 1;
+
+        // Increment or reset turnOrder for multi-supplier support
+        turnOrder = ( turnOrder == Object.keys(supplier).length-1 ? 0 : turnOrder+1 );
+    }
+    return Object.keys(houses).length;
+}
+   
+    return calc(1);
 }
 
 
 function day3b(text) {
     var result = 0;
-    // var lines = text.split('\n');
-    
     var map = createArray(999, 999);
-    
-    // var map = new Array(999);
-    // for(var temp = 0; temp < 1000; temp++)
-    //     map[temp] = new Array(999);
-        
+
     for (var temp = 0; temp < 999; temp++)
         for (var temp2 = 0; temp2 < 999; temp2++)
             map[temp][temp2] = 0;
@@ -380,7 +387,7 @@ window.onload = function () {
     var fileUrl = "input.txt";
     var text = "";
     text = readTextFile(fileUrl);
-    document.getElementById("output").innerHTML = day2b(text).toString();
+    document.getElementById("output").innerHTML = day3a(text).toString();
     
     // var temp = [1,4,2,3].map(function(x){
     //     return x +10;
